@@ -1,0 +1,34 @@
+name: RDP Session (Playit Static Host)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rdp:
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Enable RDP
+        run: |
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+
+      - name: Create user
+        run: |
+          net user runner "Pass1234567!" /add
+          net localgroup Administrators runner /add
+          net localgroup "Remote Desktop Users" runner /add
+
+      - name: Download Playit
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-windows-x86_64.exe" -OutFile "$env:USERPROFILE\playit.exe"
+
+      - name: Run Playit & Keep Alive
+        env:
+          PLAYIT_SECRET: ${{ secrets.PLAYIT_SECRET }}
+        run: |
+          Start-Process -FilePath "$env:USERPROFILE\playit.exe" -ArgumentList "--secret $env:PLAYIT_SECRET" -NoNewWindow
+          Write-Host "RDP Active! Use your fixed Playit.gg address to connect."
+          Start-Sleep -Seconds 21600
