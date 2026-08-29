@@ -1,4 +1,4 @@
-name: RDP Session (Playit Static Host)
+name: RDP Session (Bore Tunnel)
 
 on:
   workflow_dispatch:
@@ -21,14 +21,13 @@ jobs:
           net localgroup Administrators runner /add
           net localgroup "Remote Desktop Users" runner /add
 
-      - name: Download Playit
+      - name: Download Bore
         run: |
-          Invoke-WebRequest -Uri "https://github.com/playit-cloud/playit-agent/releases/latest/download/playit-windows-x86_64.exe" -OutFile "$env:USERPROFILE\playit.exe"
+          Invoke-WebRequest -Uri "https://github.com/ekzhang/bore/releases/download/v0.5.0/bore-v0.5.0-x86_64-pc-windows-msvc.zip" -OutFile "$env:USERPROFILE\bore.zip"
+          Expand-Archive -Path "$env:USERPROFILE\bore.zip" -DestinationPath "$env:USERPROFILE\bore"
 
-      - name: Run Playit & Keep Alive
-        env:
-          PLAYIT_SECRET: ${{ secrets.PLAYIT_SECRET }}
+      - name: Start Tunnel & Keep Alive
         run: |
-          Start-Process -FilePath "$env:USERPROFILE\playit.exe" -ArgumentList "--secret $env:PLAYIT_SECRET" -NoNewWindow
-          Write-Host "RDP Active! Use your fixed Playit.gg address to connect."
-          Start-Sleep -Seconds 21600
+          Write-Host "Starting tunnel... Check line below for remote port."
+          & "$env:USERPROFILE\bore\bore.exe" local 3389 --to bore.pub
+
