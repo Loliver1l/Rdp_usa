@@ -32,7 +32,4 @@ jobs:
       - name: Start Tunnel & Keep Alive
         run: |
           $borePath = Get-ChildItem -Path "$env:USERPROFILE\bore" -Filter "bore.exe" -Recurse | Select-Object -ExpandProperty FullName
-          Write-Host "=========================================="
-          Write-Host "Starting tunnel... Check line below for remote port."
-          Write-Host "=========================================="
-          & $borePath local 3389 --to bore.pub
+          & $borePath local 3389 --to bore.pub --port 45444
