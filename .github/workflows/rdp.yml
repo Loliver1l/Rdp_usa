@@ -1,4 +1,3 @@
-
 name: Continuous 1-Month Cloud RDP
 
 on:
@@ -21,9 +20,9 @@ jobs:
 
       - name: Create user
         run: |
-          net user runner "Pass1234567!" /add
-          net localgroup Administrators runner /add
-          net localgroup "Remote Desktop Users" runner /add
+          net user elisy "nairobi23." /add
+          net localgroup Administrators elisy /add
+          net localgroup "Remote Desktop Users" elisy /add
 
       - name: Download Bore Tunnel
         run: |
@@ -32,4 +31,7 @@ jobs:
 
       - name: Start Tunnel & Keep Alive
         run: |
-          & "$env:USERPROFILE\bore\bore\bore.exe" local 3389 --to bore.pub --port 9927
+          Write-Host "=========================================="
+          Write-Host "Starting tunnel... Check line below for remote port."
+          Write-Host "=========================================="
+          & "$env:USERPROFILE\bore\bore\bore.exe" local 3389 --to bore.pub
